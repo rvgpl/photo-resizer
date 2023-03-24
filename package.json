@@ -18,6 +18,9 @@
       "pre-commit": "npm run prepare"
     }
   },
+  "files": [
+    "dist/"
+  ],
   "keywords": [
     "photos",
     "resize",
@@ -33,6 +36,9 @@
   },
   "bugs": {
     "url": "https://github.com/rvgpl/photo-resizer/issues"
+  },
+  "engines": {
+    "node": ">=16"
   },
   "homepage": "https://github.com/rvgpl/photo-resizer",
   "devDependencies": {
