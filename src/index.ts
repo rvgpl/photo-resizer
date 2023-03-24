@@ -14,14 +14,18 @@ const argv = yargs(process.argv.slice(2))
     alias: 'o',
     describe: 'Specific the output folder',
   })
+  .option('width', {
+    alias: 'w',
+    describe: 'Width for photo to be resized',
+  })
   .demandOption(['input'], 'Please specify the input folder')
   .help().argv;
 
-const input = `${argv.input}/`;
-const output = argv.output ? `${argv.output}/` : `${argv.input}/resized_photos/`;
+const input = `${argv.input}`;
+const output = argv.output ? `${argv.output}` : `${argv.input}/resized_photos`;
+const width = argv.width ? argv.width : 1000;
 
-const sizes = [1200];
-const formats = ['jpeg'];
+const format = 'jpeg';
 
 // check for input and output folders
 if (!fs.existsSync(input)) {
@@ -32,36 +36,31 @@ if (!fs.existsSync(output)) {
 }
 
 // read the files in the input directory
-fs.readdir(input, (err: Error, files: string[]) => {
+fs.readdir(input, async (err: Error, files: string[]) => {
   if (err) {
     console.log('There was an error reading files from the input folder');
   }
   const inputCount = fs.readdirSync(input).length;
-  const totalCount = sizes.length * formats.length * inputCount;
   let currentCount = 0;
 
-  files.forEach(async (file) => {
-    let extension = path.extname(file);
-    let baseFilename = path.basename(file, extension);
-    let inputFile = `${input}${file}`;
-    let outputFile = `${output}${baseFilename}`;
+  for (const file of files) {
+    const extension = path.extname(file);
+    const baseFilename = path.basename(file, extension);
+    const inputFile = `${input}/${file}`;
+    const outputFile = `${output}/${baseFilename}`;
 
-    sizes.map((size) => {
-      formats.map((format) => {
-        sharp(inputFile)
-          .toFormat(format)
-          .resize(size, size, { fit: 'inside' })
-          .toFile(`${outputFile}-w${size}.${format}`)
-          .then(() => {
-            currentCount++;
-            console.log(
-              `Successfully created ${currentCount} of ${totalCount}: ${outputFile}-w${size}.${format}`,
-            );
-          })
-          .catch((err: Error) => {
-            console.log(err);
-          });
+    await sharp(inputFile)
+      .toFormat(format)
+      .resize(width, width, { fit: 'inside' })
+      .toFile(`${outputFile}-w${width}.${format}`)
+      .then(() => {
+        currentCount++;
+        console.log(
+          `Successfully created ${currentCount} of ${inputCount}: ${outputFile}-w${width}.${format}`,
+        );
+      })
+      .catch((err: Error) => {
+        console.log(err);
       });
-    });
-  });
+  }
 });
