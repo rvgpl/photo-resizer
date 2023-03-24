@@ -13,6 +13,11 @@
     "test": "jest --config jest.config.json --no-cache",
     "prepare": "npm run build && npm run lint && npm run prettier && npm run test"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prepare"
+    }
+  },
   "keywords": [
     "photos",
     "resize",
@@ -43,6 +48,7 @@
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-markdown": "^3.0.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
     "jest": "^29.5.0",
     "prettier": "^2.8.7",
     "ts-jest": "^29.0.5",
