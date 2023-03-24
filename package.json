@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/rvgpl/photo-resizer",
   "devDependencies": {
+    "@types/node": "^18.15.7",
     "typescript": "^5.0.2"
   }
 }
