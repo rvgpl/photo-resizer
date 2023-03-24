@@ -1,25 +1,29 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
-const yargs = require('yargs/yargs');
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
+import yargs from 'yargs/yargs';
 
 const argv = yargs(process.argv.slice(2))
   .option('input', {
+    type: 'string',
     alias: 'i',
     describe: 'Specific the input folder',
   })
   .option('output', {
+    type: 'string',
     alias: 'o',
     describe: 'Specific the output folder',
   })
   .option('width', {
+    type: 'number',
     alias: 'w',
     describe: 'Width for photo to be resized',
   })
   .demandOption(['input'], 'Please specify the input folder')
-  .help().argv;
+  .help()
+  .parseSync();
 
 const input = `${argv.input}`;
 const output = argv.output ? `${argv.output}` : `${argv.input}/resized_photos`;
@@ -36,31 +40,31 @@ if (!fs.existsSync(output)) {
 }
 
 // read the files in the input directory
-fs.readdir(input, async (err: Error, files: string[]) => {
+fs.readdir(input, (err: Error | null, files: string[]) => {
   if (err) {
     console.log('There was an error reading files from the input folder');
   }
   const inputCount = fs.readdirSync(input).length;
   let currentCount = 0;
 
-  for (const file of files) {
+  files.forEach((file) => {
     const extension = path.extname(file);
     const baseFilename = path.basename(file, extension);
     const inputFile = `${input}/${file}`;
     const outputFile = `${output}/${baseFilename}`;
 
-    await sharp(inputFile)
+    sharp(inputFile)
       .toFormat(format)
       .resize(width, width, { fit: 'inside' })
       .toFile(`${outputFile}-w${width}.${format}`)
       .then(() => {
-        currentCount++;
+        currentCount += 1;
         console.log(
           `Successfully created ${currentCount} of ${inputCount}: ${outputFile}-w${width}.${format}`,
         );
       })
-      .catch((err: Error) => {
-        console.log(err);
+      .catch((error: Error) => {
+        console.log(error);
       });
-  }
+  });
 });
